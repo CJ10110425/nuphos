@@ -6,6 +6,7 @@ import {
   findNotionIntegration,
   findUpstashAccount,
   findResendIntegration,
+  findMercuryIntegration,
 } from '@/lib/byos/account'
 import { AppError } from '@/lib/errors'
 import { parseObjectId } from '@/lib/objectid'
@@ -13,6 +14,7 @@ import { canRequestUseBinding } from '@/middleware/auth/binding-access'
 
 import type {
   BetterStackIntegrationVariables,
+  MercuryIntegrationVariables,
   NotionIntegrationVariables,
   ResendIntegrationVariables,
   UpstashAccountVariables,
@@ -60,6 +62,52 @@ export function requireResendMemberAccess(): MiddlewareHandler<{
         403,
         'resend_integration_access_denied',
         'You are not allowed to use this Resend integration binding',
+      )
+    }
+    await next()
+  }
+}
+
+export function requireMercuryIntegration(): MiddlewareHandler<{
+  Variables: MercuryIntegrationVariables
+}> {
+  return async (c, next) => {
+    const param = c.req.param('integrationId')
+
+    if (!param || !/^[a-f0-9]{24}$/i.test(param)) {
+      throw new AppError(
+        400,
+        'invalid_integration_id',
+        'integrationId must be a 24-character hex ObjectId',
+      )
+    }
+    const teamId = parseObjectId(c.get('teamId'), 'teamId')
+    const binding = await findMercuryIntegration(teamId, new ObjectId(param))
+
+    if (!binding) {
+      throw new AppError(
+        404,
+        'mercury_integration_not_bound',
+        `Mercury integration ${param} is not bound to this team`,
+      )
+    }
+    c.set('mercuryIntegrationId', param)
+    c.set('mercuryIntegrationLabel', binding.label)
+    c.set('mercuryAccess', binding.access)
+    c.set('mercuryBinding', binding)
+    await next()
+  }
+}
+
+export function requireMercuryMemberAccess(): MiddlewareHandler<{
+  Variables: MercuryIntegrationVariables
+}> {
+  return async (c, next) => {
+    if (!canRequestUseBinding(c, c.get('mercuryAccess'))) {
+      throw new AppError(
+        403,
+        'mercury_integration_access_denied',
+        'You are not allowed to use this Mercury integration binding',
       )
     }
     await next()

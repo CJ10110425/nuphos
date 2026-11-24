@@ -31,6 +31,12 @@ export type ResendIntegration = {
   createdAt?: string
 }
 
+export type MercuryIntegration = {
+  id: string
+  label: string
+  createdAt?: string
+}
+
 // Forward an arbitrary Grafana request through the Nuphos backend's proxy.
 // `path` should be the Grafana-side path (e.g. "/api/search?type=dash-db").
 export async function listLinodeAccounts(teamId: string): Promise<LinodeAccount[]> {
@@ -250,6 +256,38 @@ export async function unbindResendIntegration(
   integrationId: string,
 ): Promise<void> {
   await call<void>('DELETE', `/teams/${teamId}/resend-integrations/${integrationId}`, undefined, {
+    retry: false,
+  })
+}
+
+export async function listMercuryIntegrations(teamId: string): Promise<MercuryIntegration[]> {
+  const data = await call<{ integrations: MercuryIntegration[] }>(
+    'GET',
+    `/teams/${teamId}/mercury-integrations`,
+  )
+
+  return data.integrations ?? []
+}
+
+export async function bindMercuryIntegration(
+  teamId: string,
+  label: string,
+  apiToken: string,
+  share?: BindingShare,
+): Promise<MercuryIntegration> {
+  return call<MercuryIntegration>(
+    'POST',
+    `/teams/${teamId}/mercury-integrations`,
+    withShare({ label, apiToken }, share),
+    { retry: false },
+  )
+}
+
+export async function unbindMercuryIntegration(
+  teamId: string,
+  integrationId: string,
+): Promise<void> {
+  await call<void>('DELETE', `/teams/${teamId}/mercury-integrations/${integrationId}`, undefined, {
     retry: false,
   })
 }

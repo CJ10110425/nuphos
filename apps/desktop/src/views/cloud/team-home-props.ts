@@ -18,6 +18,7 @@ import type {
   LarkInstallation,
   LinearWorkspace,
   LinodeAccount,
+  MercuryIntegration,
   NotionIntegration,
   OnpremCluster,
   PlaudAccount,
@@ -53,6 +54,7 @@ export type TeamHomeViewProps = {
   onpremClusters: OnpremCluster[]
   upstashAccounts: UpstashAccount[]
   resendIntegrations: ResendIntegration[]
+  mercuryIntegrations: MercuryIntegration[]
   trelloIntegrations: TrelloIntegration[]
   instaboxAccounts: InstaboxAccount[]
   tencentAccounts: TencentAccount[]

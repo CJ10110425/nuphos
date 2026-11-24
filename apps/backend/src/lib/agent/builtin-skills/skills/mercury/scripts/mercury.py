@@ -39,7 +39,8 @@ def load_settings():
     token = values.get("MERCURY_API_TOKEN", "")
     if not token:
         sys.exit(
-            "No Mercury token. Ask the user for it with request_user_decision "
+            "No Mercury token. Run the setupCommand of a Mercury binding listed in the "
+            "credential section; with none listed, ask the user with request_user_decision "
             "(category credential, secretName MERCURY_API_TOKEN), then run save-token.sh."
         )
     if not token.startswith("secret-token:"):

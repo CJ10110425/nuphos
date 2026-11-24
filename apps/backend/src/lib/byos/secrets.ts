@@ -96,6 +96,12 @@ export const sealers = {
     keyId: () => config.byos.notion.encryptionKeyId,
     recovery: 'Re-bind the Notion integration.',
   }),
+  mercury: createSealer({
+    subject: 'Mercury credentials',
+    keyEnvs: byok('MERCURY_BYOK_ENCRYPTION_KEY'),
+    keyId: () => config.byos.mercury.encryptionKeyId,
+    recovery: 'Re-bind the Mercury integration.',
+  }),
   // Two-factor secrets are the account's own, but need no key of their own either.
   mfa: createSealer({
     subject: 'two-factor authentication secret',
@@ -205,6 +211,7 @@ export const { seal: encryptJiraSecret, open: decryptJiraSecret } = sealers.jira
 export const { seal: encryptLarkSecret, open: decryptLarkSecret } = sealers.lark
 export const { seal: encryptLinearSecret, open: decryptLinearSecret } = sealers.linear
 export const { seal: encryptLinodeToken, open: decryptLinodeToken } = sealers.linode
+export const { seal: encryptMercurySecret, open: decryptMercurySecret } = sealers.mercury
 export const { seal: encryptNotionSecret, open: decryptNotionSecret } = sealers.notion
 export const { seal: encryptOnpremKubeconfig, open: decryptOnpremKubeconfig } = sealers.onprem
 export const { seal: encryptPlaudSecret, open: decryptPlaudSecret } = sealers.plaud

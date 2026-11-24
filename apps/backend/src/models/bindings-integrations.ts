@@ -202,6 +202,16 @@ export type ResendIntegrationBinding = {
   access?: BindingAccess
 }
 
+export type MercuryIntegrationBinding = {
+  id: ObjectId
+  label: string
+  // Mercury API token, normalized to carry its `secret-token:` prefix. Auth is
+  // a static `Authorization: Bearer <token>`, so only the token is stored.
+  encryptedApiToken: EncryptedEnvelope
+  createdAt: Date
+  access?: BindingAccess
+}
+
 // A team's own instabox account, for Boxes billed to it instead of the deployment's
 // account. The API key is static (no expiry or refresh), so only it is stored.
 export type InstaboxAccountBinding = {

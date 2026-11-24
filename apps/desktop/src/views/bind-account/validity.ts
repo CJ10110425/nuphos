@@ -14,6 +14,10 @@ import type { Provider } from './constants'
 import type { BindState } from './use-bind-state'
 
 export function bindFormValid(st: BindState): boolean {
+  if (st.provider === 'mercury') {
+    return st.mercuryLabel.trim().length > 0 && st.mercuryApiToken.trim().length > 0
+  }
+
   return st.provider === 'aws'
     ? ARN_PATTERN.test(st.roleArn.trim())
     : st.provider === 'gcp'
@@ -93,6 +97,8 @@ export function bindFormValid(st: BindState): boolean {
 }
 
 export function providerLabelOf(provider: Provider): string {
+  if (provider === 'mercury') return 'Mercury'
+
   return provider === 'aws'
     ? 'AWS'
     : provider === 'gcp'

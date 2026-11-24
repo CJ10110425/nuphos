@@ -108,6 +108,7 @@ const tokenLookupScripts = [
   'betterstack',
   'jira',
   'linear',
+  'mercury',
   'notion',
   'plaud',
   'posthog',

@@ -17,6 +17,7 @@ export type ConnectorCategoryId =
   | 'source-control'
   | 'project-management'
   | 'document'
+  | 'finance'
   | 'messaging'
 
 export type ConnectorCategory = {
@@ -57,6 +58,11 @@ export const CONNECTOR_CATEGORIES: ConnectorCategory[] = [
     id: 'document',
     label: t('Docs & knowledge'),
     catalog: ['notion', 'plaud'],
+  },
+  {
+    id: 'finance',
+    label: t('Finance'),
+    catalog: ['mercury'],
   },
   {
     id: 'source-control',

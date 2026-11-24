@@ -28,6 +28,7 @@ import { publicView as instaboxAccountView } from '@/routes/instabox-accounts'
 import { publicView as jiraSiteView } from '@/routes/jira-sites'
 import { publicView as linearWorkspaceView } from '@/routes/linear-workspaces'
 import { publicView as linodeAccountView } from '@/routes/linode-accounts'
+import { publicView as mercuryIntegrationView } from '@/routes/mercury-integrations'
 import { publicView as notionIntegrationView } from '@/routes/notion-integrations'
 import { publicView as onpremClusterView } from '@/routes/onprem-clusters/shared'
 import { publicView as plaudAccountView } from '@/routes/plaud-accounts'
@@ -123,6 +124,7 @@ teamConnectorsRoutes.get('/', async (c) => {
     onprem: connectorViews('onprem', doc?.onpremClusters, onpremClusterView),
     upstash: connectorViews('upstash', doc?.upstashAccounts, upstashAccountView),
     resend: connectorViews('resend', doc?.resendIntegrations, resendIntegrationView),
+    mercury: connectorViews('mercury', doc?.mercuryIntegrations, mercuryIntegrationView),
     trello: connectorViews('trello', doc?.trelloIntegrations, trelloIntegrationView),
     posthog: connectorViews('posthog', doc?.posthogIntegrations, posthogPublicView),
     plaud: connectorViews('plaud', doc?.plaudAccounts, plaudAccountView),

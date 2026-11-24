@@ -80,6 +80,7 @@ function oneOfEach(): AgentCredentialOptions {
     secureframeIntegrations: [{ integrationId: ID, label, region: 'us' }],
     trelloIntegrations: [{ integrationId: ID, label, username: 'fixture' }],
     resendIntegrations: [{ integrationId: ID, label, permission: 'sending_access' }],
+    mercuryIntegrations: [{ integrationId: ID, label }],
     githubInstallations: [{ installationId: ID, accountLogin: 'org', accountType: 'Organization' }],
     gitlabBindings: [{ bindingId: ID, hostUrl: 'https://g', username: 'u' }],
     grafanaInstances: [{ instanceId: ID, name: label, grafanaUrl: 'https://gr' }],

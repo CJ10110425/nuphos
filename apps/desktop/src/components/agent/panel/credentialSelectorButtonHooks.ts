@@ -21,6 +21,7 @@ import {
   buildBetterStackCredentialSections,
   buildJiraCredentialSections,
   buildLinearCredentialSections,
+  buildMercuryCredentialSections,
   buildResendCredentialSections,
   buildTrelloCredentialSections,
   buildSecureframeCredentialSections,
@@ -136,6 +137,10 @@ export function useCredentialSections(options: CredentialSelectorControl['option
     () => buildResendCredentialSections(options.resendIntegrations),
     [options.resendIntegrations],
   )
+  const mercurySections = useMemo(
+    () => buildMercuryCredentialSections(options.mercuryIntegrations),
+    [options.mercuryIntegrations],
+  )
   const betterStackSections = useMemo(
     () => buildBetterStackCredentialSections(options.betterStackIntegrations),
     [options.betterStackIntegrations],
@@ -220,6 +225,7 @@ export function useCredentialSections(options: CredentialSelectorControl['option
     vantaSections,
     secureframeSections,
     resendSections,
+    mercurySections,
     trelloSections,
     betterStackSections,
     uptimeKumaSections,

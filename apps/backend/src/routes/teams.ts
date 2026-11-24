@@ -46,6 +46,7 @@ import { knowledgeRoutes } from '@/routes/knowledge'
 import { larkInstallationsRoutes } from '@/routes/lark-installations'
 import { linearWorkspacesRoutes } from '@/routes/linear-workspaces'
 import { linodeAccountsRoutes } from '@/routes/linode-accounts'
+import { mercuryIntegrationsRoutes } from '@/routes/mercury-integrations'
 import { monitoringRoutes } from '@/routes/monitoring'
 import { notionIntegrationsRoutes } from '@/routes/notion-integrations'
 import { onpremClustersRoutes } from '@/routes/onprem-clusters'
@@ -130,9 +131,7 @@ const usageQuerySchema = z
     message: 'The range must run forward and span at most 400 days',
   })
 
-const teamScoped = new Hono<{
-  Variables: TeamAuthVariables & ConversationTeamAuthVariables
-}>()
+const teamScoped = new Hono<{ Variables: TeamAuthVariables & ConversationTeamAuthVariables }>()
 
 teamScoped.use('*', requireTeamMember())
 teamScoped.use('*', dispatchConversationTeamApi)
@@ -284,6 +283,7 @@ teamScoped.route('/sonarqube-integrations', sonarqubeIntegrationsRoutes)
 teamScoped.route('/notion-integrations', notionIntegrationsRoutes)
 teamScoped.route('/upstash-accounts', upstashAccountsRoutes)
 teamScoped.route('/resend-integrations', resendIntegrationsRoutes)
+teamScoped.route('/mercury-integrations', mercuryIntegrationsRoutes)
 teamScoped.route('/trello-integrations', trelloIntegrationsRoutes)
 teamScoped.route('/instabox-accounts', instaboxAccountsRoutes)
 teamScoped.route('/posthog-integrations', posthogIntegrationsRoutes)

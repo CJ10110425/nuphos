@@ -18,6 +18,7 @@ import type {
   PosthogIntegrationBinding,
   UpstashAccountBinding,
   ResendIntegrationBinding,
+  MercuryIntegrationBinding,
   TrelloIntegrationBinding,
   JiraSiteBinding,
   AsanaAccountBinding,
@@ -215,6 +216,15 @@ export type ResendIntegrationVariables = TeamAuthVariables & {
   /** The full binding — the credentials route decrypts the API key to hand it to
    *  the agent sandbox. */
   resendBinding: ResendIntegrationBinding
+}
+
+export type MercuryIntegrationVariables = TeamAuthVariables & {
+  mercuryIntegrationId: string
+  mercuryIntegrationLabel: string
+  mercuryAccess?: BindingAccess
+  /** The full binding — the credentials route decrypts the token to hand it to
+   *  the agent sandbox. */
+  mercuryBinding: MercuryIntegrationBinding
 }
 
 export type PosthogIntegrationVariables = TeamAuthVariables & {

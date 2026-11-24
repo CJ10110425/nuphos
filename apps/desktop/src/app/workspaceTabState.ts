@@ -28,6 +28,7 @@ import type {
   LarkInstallation,
   LinearWorkspace,
   LinodeAccount,
+  MercuryIntegration,
   NotionIntegration,
   OnpremCluster,
   ResendIntegration,
@@ -76,6 +77,7 @@ export type AccountSet = {
   onprem: OnpremCluster[]
   upstash: UpstashAccount[]
   resend: ResendIntegration[]
+  mercury: MercuryIntegration[]
   trello: TrelloIntegration[]
   instabox: InstaboxAccount[]
   tencent: TencentAccount[]

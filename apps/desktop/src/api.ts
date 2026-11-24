@@ -20,6 +20,7 @@ import { gitApi } from './api/git-api.ts'
 import { instructionsApi } from './api/instructions-api.ts'
 import { integrationsApi } from './api/integrations-api.ts'
 import { k8sApi } from './api/k8s-api.ts'
+import { mercuryApi } from './api/mercury-api.ts'
 import { monitoringApi } from './api/monitoring-api.ts'
 import { plaudApi } from './api/plaud-api.ts'
 import { posthogApi } from './api/posthog-api.ts'
@@ -47,6 +48,7 @@ import type { WindowGitApi } from './api/window-git.ts'
 import type { WindowInstructionsApi } from './api/window-instructions.ts'
 import type { WindowIntegrationsApi } from './api/window-integrations.ts'
 import type { WindowK8sApi } from './api/window-k8s.ts'
+import type { WindowMercuryApi } from './api/window-mercury.ts'
 import type { WindowMonitoringApi } from './api/window-monitoring.ts'
 import type { WindowPlaudApi } from './api/window-plaud.ts'
 import type { WindowPosthogApi } from './api/window-posthog.ts'
@@ -83,6 +85,7 @@ declare global {
       WindowIntegrationsApi &
       WindowPosthogApi &
       WindowPlaudApi &
+      WindowMercuryApi &
       WindowBindingAccessApi &
       WindowSessionAccessApi &
       WindowChannelsApi &
@@ -111,6 +114,7 @@ const rawApi = {
   ...integrationsApi,
   ...posthogApi,
   ...plaudApi,
+  ...mercuryApi,
   ...bindingAccessApi,
   ...awsApi,
   ...gcpClustersApi,

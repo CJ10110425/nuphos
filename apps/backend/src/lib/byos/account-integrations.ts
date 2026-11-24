@@ -231,6 +231,15 @@ export async function findResendIntegration(
   return (doc?.resendIntegrations ?? []).find((b) => b.id.equals(bindingId)) ?? null
 }
 
+export async function findMercuryIntegration(teamId: ObjectId, bindingId: ObjectId) {
+  const doc = await teamByosBindings().findOne(
+    { _id: teamId },
+    { projection: { mercuryIntegrations: 1 } },
+  )
+
+  return (doc?.mercuryIntegrations ?? []).find((b) => b.id.equals(bindingId)) ?? null
+}
+
 export async function findJiraSite(
   teamId: ObjectId,
   bindingId: ObjectId,

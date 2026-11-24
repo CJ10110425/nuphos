@@ -18,6 +18,7 @@ import { instructionsApi } from './preload-parts/api-instructions'
 import { integrationsApi } from './preload-parts/api-integrations'
 import { k8sAppApi } from './preload-parts/api-k8s-app'
 import { localTerminalApi } from './preload-parts/api-local-terminal'
+import { mercuryApi } from './preload-parts/api-mercury'
 import { plaudApi } from './preload-parts/api-plaud'
 import { posthogApi } from './preload-parts/api-posthog'
 import { sessionAccessApi } from './preload-parts/api-session-access'
@@ -48,6 +49,7 @@ const api = {
   ...integrationsApi,
   ...posthogApi,
   ...plaudApi,
+  ...mercuryApi,
   ...vpsApi,
   ...bindingAccessApi,
   ...sessionAccessApi,

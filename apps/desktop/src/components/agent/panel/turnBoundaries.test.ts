@@ -29,6 +29,7 @@ const credentialAccess: Tab['credentialAccess'] = {
   vantaIntegrationIds: [],
   secureframeIntegrationIds: [],
   resendIntegrationIds: [],
+  mercuryIntegrationIds: [],
   trelloIntegrationIds: [],
 }
 

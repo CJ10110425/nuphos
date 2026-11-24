@@ -1,11 +1,13 @@
 import * as atlas from '../atlas'
 
 import { bindingAccessChannels } from './channels-binding-access'
+import { mercuryChannels } from './channels-mercury'
 import { plaudChannels } from './channels-plaud'
 import { vpsChannels } from './channels-vps'
 
 export const integrationsChannels = {
   ...plaudChannels,
+  ...mercuryChannels,
   ...bindingAccessChannels,
   ...vpsChannels,
   'atlas:listVantaIntegrations': (_e: unknown, teamId: string) =>

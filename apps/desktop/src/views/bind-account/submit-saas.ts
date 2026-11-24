@@ -1,4 +1,4 @@
-import { api } from '../../api'
+import { api, parseAtlasError } from '../../api'
 import { toast } from '../../components/ui/toast'
 import { t } from '../../i18n/index.ts'
 
@@ -153,6 +153,47 @@ export async function submitResend(st: BindState, env: SubmitEnv) {
     env.onClose()
   } catch (e) {
     setError(errorMessage(e))
+    setSubmitting(false)
+  }
+}
+
+// The backend's bind errors carry a code; these two read better as our own copy.
+function mercuryBindError(e: unknown): string {
+  const { code } = parseAtlasError(e)
+
+  if (code === 'invalid_mercury_api_token') {
+    return t('Mercury rejected this API token. Check it is a current Read Only token.')
+  }
+  if (code === 'mercury_api_unavailable') {
+    return t('Mercury could not be reached. Try again in a moment.')
+  }
+
+  return errorMessage(e)
+}
+
+export async function submitMercury(st: BindState, env: SubmitEnv) {
+  const { setError, setSubmitting, reset } = st
+  const label = st.mercuryLabel.trim()
+  const apiToken = st.mercuryApiToken.trim()
+
+  if (!label) {
+    setError(t('Label is required.'))
+
+    return
+  }
+  if (!apiToken) {
+    setError(t('A Mercury API token is required.'))
+
+    return
+  }
+  setSubmitting(true)
+  try {
+    await api.atlasBindMercuryIntegration(env.teamId, label, apiToken, env.share)
+    reset()
+    env.onBound()
+    env.onClose()
+  } catch (e) {
+    setError(mercuryBindError(e))
     setSubmitting(false)
   }
 }

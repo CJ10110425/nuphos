@@ -41,6 +41,7 @@ export type CredentialSection = {
     | 'vanta'
     | 'secureframe'
     | 'resend'
+    | 'mercury'
     | 'github'
     | 'gitlab'
     | 'grafana'

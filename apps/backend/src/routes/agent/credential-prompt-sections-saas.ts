@@ -169,3 +169,17 @@ export function appendResendIntegrationLines(
     )
   }
 }
+
+export function appendMercuryIntegrationLines(
+  lines: string[],
+  mercuryIntegrations: NonNullable<Options['mercuryIntegrations']>,
+  teamId: string,
+) {
+  if (mercuryIntegrations.length === 0) return
+  lines.push('', 'Mercury integrations (business bank account — read-only; bank data is private):')
+  for (const integration of mercuryIntegrations) {
+    lines.push(
+      `- integrationId=${integration.integrationId}; label=${safePromptField(integration.label)}; setupCommand="bash skills/mercury/scripts/setup-credentials.sh ${teamId} ${integration.integrationId}"; tip="Run setupCommand, then python3 -I skills/mercury/scripts/mercury.py ping. Read only the date range the request needs and never print full account or routing numbers or the token."`,
+    )
+  }
+}

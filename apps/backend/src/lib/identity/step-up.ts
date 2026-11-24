@@ -35,6 +35,7 @@ const CONNECTORS = [
   'jira-sites',
   'linear-workspaces',
   'linode-accounts',
+  'mercury-integrations',
   'notion-integrations',
   'onprem-clusters',
   'plaud-accounts',

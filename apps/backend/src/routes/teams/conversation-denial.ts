@@ -21,6 +21,7 @@ export const CONNECTOR_COLLECTIONS = new Set([
   'vanta-integrations',
   'secureframe-integrations',
   'resend-integrations',
+  'mercury-integrations',
   'trello-integrations',
   'posthog-integrations',
   'plaud-accounts',

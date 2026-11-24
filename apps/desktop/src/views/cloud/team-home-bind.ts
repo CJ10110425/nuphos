@@ -16,6 +16,7 @@ export type BindProvider =
   | 'notion'
   | 'upstash'
   | 'resend'
+  | 'mercury'
   | 'instabox'
   | 'tencent'
   | 'aliyun'

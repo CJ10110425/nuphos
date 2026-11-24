@@ -16,6 +16,7 @@ export type Provider =
   | 'notion'
   | 'upstash'
   | 'resend'
+  | 'mercury'
   | 'instabox'
   | 'tencent'
   | 'aliyun'

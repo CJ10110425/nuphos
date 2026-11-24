@@ -48,6 +48,7 @@ export type AddIntegrationKey =
   | 'notion'
   | 'upstash'
   | 'resend'
+  | 'mercury'
   | 'instabox'
   | 'slack'
   | 'discord'
@@ -106,6 +107,10 @@ const ITEM_META: Record<AddIntegrationKey, { name: string; description: string }
   plaud: { name: 'Plaud', description: t('Recordings, transcripts & summaries.') },
   notion: { name: 'Notion', description: t('Pages, databases & docs.') },
   resend: { name: 'Resend', description: t('Send transactional email.') },
+  mercury: {
+    name: 'Mercury',
+    description: t('Business bank accounts, cards & transactions (read-only).'),
+  },
   instabox: {
     name: 'instabox',
     description: t('Computers for your Bots and tasks, billed to your instabox account.'),
@@ -142,6 +147,7 @@ const ALIASES: Partial<Record<AddIntegrationKey, string>> = {
   gitlab: 'git',
   jira: 'atlassian',
   resend: 'smtp',
+  mercury: 'bank banking finance',
   trello: 'smtp',
   lark: '飛書 飞书',
 }

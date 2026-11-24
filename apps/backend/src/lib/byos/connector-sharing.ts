@@ -29,6 +29,7 @@ const PROVIDERS: Record<string, string> = {
   notionIntegrations: 'notion',
   upstashAccounts: 'upstash',
   resendIntegrations: 'resend',
+  mercuryIntegrations: 'mercury',
   trelloIntegrations: 'trello',
   instaboxAccounts: 'instabox',
   tencentAccounts: 'tencent',

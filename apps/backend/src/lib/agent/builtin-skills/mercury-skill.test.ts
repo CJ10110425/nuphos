@@ -65,6 +65,48 @@ describe('save-token.sh', () => {
   })
 })
 
+describe('setup-credentials.sh', () => {
+  test('writes the bound token in the save-token.sh format and never prints it', async () => {
+    const paths: string[] = []
+    const backend = Bun.serve({
+      port: 0,
+      fetch(request) {
+        paths.push(new URL(request.url).pathname)
+
+        return Response.json({
+          bindingId: 'b1',
+          label: 'Ops',
+          apiToken: 'mercury_production_xyz789',
+          apiBaseUrl: 'https://api.mercury.com/api/v1',
+        })
+      },
+    })
+    const home = mkdtempSync(join(tmpdir(), 'mercury-setup-'))
+
+    try {
+      const result = await runAsync(['bash', join(scripts, 'setup-credentials.sh'), 't1', 'b1'], {
+        HOME: home,
+        NUPHOS_TOKEN: 'nuphos-token',
+        NUPHOS_BACKEND_URL: `http://127.0.0.1:${backend.port}`,
+      })
+      const env = join(home, '.mercury', 'nuphos.env')
+
+      expect(result.code).toBe(0)
+      expect(paths).toEqual(['/teams/t1/mercury-integrations/b1/credentials'])
+      expect(result.out + result.err).not.toContain('xyz789')
+      expect(readFileSync(env, 'utf8')).toBe(
+        'unset MERCURY_API_TOKEN\n' +
+          'export MERCURY_API_TOKEN=secret-token:mercury_production_xyz789\n' +
+          'export MERCURY_API_BASE_URL=https://api.mercury.com/api/v1\n' +
+          'export MERCURY_BINDING_ID=b1\n',
+      )
+      expect(statSync(env).mode & 0o777).toBe(0o600)
+    } finally {
+      await backend.stop(true)
+    }
+  })
+})
+
 describe('mercury.py', () => {
   let server: ReturnType<typeof Bun.serve>
   const seen: Array<{ method: string; path: string; auth: string | null }> = []
