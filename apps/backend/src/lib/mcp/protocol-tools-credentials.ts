@@ -3,11 +3,12 @@ export const CREDENTIAL_TOOLS = [
     name: 'nuphos_list_credentials',
     description:
       'List the credentials (GitHub installations, personal credentials, AWS roles, GCP service accounts, Linode/Hetzner ' +
-      'accounts, Better Stack/Uptime Kuma/Jira/Asana/Sentry/Tailscale/Zeabur/Vanta/Secureframe/Resend integrations) ' +
+      'accounts, Better Stack/Uptime Kuma/Jira/Asana/Sentry/Tailscale/Zeabur/Vanta/Secureframe/Resend/Mercury integrations) ' +
       'you can use in a team. Pass session_id to also see which of them are ' +
       'currently enabled for that conversation. New conversations start with ALL ' +
-      'listed credentials enabled EXCEPT Resend, which sends mail and must be ' +
-      'enabled explicitly with nuphos_update_credentials; narrow the rest the same way.',
+      'listed credentials enabled EXCEPT Resend, which sends mail, and Mercury, which ' +
+      'reads bank data; both must be enabled explicitly with nuphos_update_credentials; ' +
+      'narrow the rest the same way.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -29,8 +30,8 @@ export const CREDENTIAL_TOOLS = [
     name: 'nuphos_update_credentials',
     description:
       'Replace the cloud/service credentials a conversation may use: omitted or empty ' +
-      'cloud/service lists revoke that category. GitHub installations, personal credentials ' +
-      'and team identity instead keep their stored value when omitted; [] clears them. Categories this tool has no parameter for, such as local devices, ' +
+      'cloud/service lists revoke that category. GitHub installations, Mercury integrations, ' +
+      'personal credentials and team identity instead keep their stored value when omitted; [] clears them. Categories this tool has no parameter for, such as local devices, ' +
       'stay as they are. Ids must come from nuphos_list_credentials; any id you are not ' +
       'allowed to use is filtered out by the same validator as the conversation picker. Takes effect on the next ' +
       'nuphos_ask in the session.',
@@ -72,6 +73,12 @@ export const CREDENTIAL_TOOLS = [
         vanta_integration_ids: { type: 'array', items: { type: 'string' } },
         secureframe_integration_ids: { type: 'array', items: { type: 'string' } },
         resend_integration_ids: { type: 'array', items: { type: 'string' } },
+        mercury_integration_ids: {
+          type: 'array',
+          items: { type: 'string' },
+          description:
+            'Mercury integrations to allow (read-only bank data). Omit to keep; [] clears.',
+        },
       },
       required: ['session_id', 'team_id'],
     },

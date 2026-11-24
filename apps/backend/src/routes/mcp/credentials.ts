@@ -48,6 +48,7 @@ function credentialAccessPayload(access: {
   vantaIntegrationIds: string[]
   secureframeIntegrationIds: string[]
   resendIntegrationIds?: string[]
+  mercuryIntegrationIds?: string[]
   trelloIntegrationIds?: string[]
   githubInstallationIds?: string[]
   personalCredentialIds?: string[]
@@ -69,6 +70,7 @@ function credentialAccessPayload(access: {
     vanta_integration_ids: access.vantaIntegrationIds,
     secureframe_integration_ids: access.secureframeIntegrationIds,
     resend_integration_ids: access.resendIntegrationIds ?? [],
+    mercury_integration_ids: access.mercuryIntegrationIds ?? [],
     trello_integration_ids: access.trelloIntegrationIds ?? [],
     github_installation_ids: access.githubInstallationIds,
     personal_credential_ids: access.personalCredentialIds ?? [],
@@ -140,6 +142,7 @@ const NAMED_CATEGORIES = {
 // These newer fields follow PATCH semantics: omission keeps the stored selection.
 const OPTIONAL_CATEGORIES = {
   githubInstallationIds: 'github_installation_ids',
+  mercuryIntegrationIds: 'mercury_integration_ids',
   personalCredentialIds: 'personal_credential_ids',
   teamIdentity: 'team_identity',
 } as const

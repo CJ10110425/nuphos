@@ -13,6 +13,7 @@ const COLLECTIONS = new Set([
   'jira-sites',
   'linear-workspaces',
   'linode-accounts',
+  'mercury-integrations',
   'notion-integrations',
   'onprem-clusters',
   'resend-integrations',

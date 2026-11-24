@@ -16,6 +16,7 @@ import {
 } from './submit-infra'
 import {
   submitNotion,
+  submitMercury,
   submitResend,
   submitInstabox,
   submitSecureframe,
@@ -55,6 +56,8 @@ export async function submitBind(st: BindState, env: SubmitEnv) {
     await submitUpstash(st, env)
   } else if (st.provider === 'resend') {
     await submitResend(st, env)
+  } else if (st.provider === 'mercury') {
+    await submitMercury(st, env)
   } else if (st.provider === 'instabox') {
     await submitInstabox(st, env)
   } else if (st.provider === 'tencent') {

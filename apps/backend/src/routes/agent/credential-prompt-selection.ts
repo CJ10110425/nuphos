@@ -24,6 +24,7 @@ export type AgentCredentialAccessSelection = Pick<
   | 'vantaIntegrationIds'
   | 'secureframeIntegrationIds'
   | 'resendIntegrationIds'
+  | 'mercuryIntegrationIds'
   | 'trelloIntegrationIds'
   | 'posthogIntegrationIds'
   | 'plaudAccountIds'
@@ -157,6 +158,11 @@ export function selectAgentCredentials(
     resendIntegrations: pick(
       options.resendIntegrations,
       access.resendIntegrationIds,
+      (integration) => integration.integrationId,
+    ),
+    mercuryIntegrations: pick(
+      options.mercuryIntegrations,
+      access.mercuryIntegrationIds,
       (integration) => integration.integrationId,
     ),
     posthogIntegrations: pick(

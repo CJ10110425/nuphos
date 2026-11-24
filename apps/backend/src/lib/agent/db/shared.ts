@@ -169,9 +169,8 @@ export type AgentConversation = ConversationTaskState & {
   tokenUsage?: AgentTokenUsageSummary
 } & ChannelFields
 
-// Which external client created the conversation (MCP callers): the OAuth
-// client registration name is the strongest signal ("Claude Code", "Codex"),
-// with the HTTP User-Agent as the fallback for raw-token callers.
+// Which external client created the conversation (MCP callers): the OAuth client registration
+// name is the strongest signal ("Claude Code", "Codex"); raw-token callers fall back to User-Agent.
 export type AgentClientMeta = {
   name?: string
   oauthClientId?: string
@@ -201,8 +200,9 @@ export type AgentCredentialAccess = {
   zeaburIds: string[]
   vantaIntegrationIds: string[]
   secureframeIntegrationIds: string[]
-  // Optional for docs written before Resend joined the session-isolation tier.
+  // Optional for docs written before Resend/Mercury joined the session-isolation tier.
   resendIntegrationIds?: string[]
+  mercuryIntegrationIds?: string[]
   trelloIntegrationIds?: string[]
   posthogIntegrationIds?: string[]
   plaudAccountIds?: string[]

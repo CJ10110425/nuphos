@@ -194,6 +194,9 @@ async function listConnectorIds(
   if (provider === 'instabox') {
     return (await api.instaboxAccounts(teamId)).map((item) => item.id)
   }
+  if (provider === 'mercury') {
+    return (await api.atlasListMercuryIntegrations(teamId)).map((item) => item.id)
+  }
   if (provider === 'posthog') {
     return (await api.atlasListPosthogIntegrations(teamId)).map((item) => item.id)
   }

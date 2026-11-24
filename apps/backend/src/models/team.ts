@@ -29,6 +29,7 @@ import type {
   BetterStackIntegrationBinding,
   InstaboxAccountBinding,
   LarkAppBinding,
+  MercuryIntegrationBinding,
   NotionIntegrationBinding,
   PlaudAccountBinding,
   PosthogIntegrationBinding,
@@ -111,6 +112,8 @@ export type TeamByosBindings = {
   upstashAccounts?: UpstashAccountBinding[]
   // Optional for the same reason; readers use `doc.resendIntegrations ?? []`.
   resendIntegrations?: ResendIntegrationBinding[]
+  // Optional for the same reason; readers use `doc.mercuryIntegrations ?? []`.
+  mercuryIntegrations?: MercuryIntegrationBinding[]
   trelloIntegrations?: TrelloIntegrationBinding[]
   posthogIntegrations?: PosthogIntegrationBinding[]
   plaudAccounts?: PlaudAccountBinding[]

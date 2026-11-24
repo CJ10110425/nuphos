@@ -38,6 +38,7 @@ export const CONNECTABLE_PROVIDERS = {
   notion: 'notionIntegrationIds',
   upstash: 'upstashAccountIds',
   resend: 'resendIntegrationIds',
+  mercury: 'mercuryIntegrationIds',
   trello: 'trelloIntegrationIds',
   cloudflare: 'cloudflareAccountIds',
   betterstack: 'betterStackIntegrationIds',

@@ -28,6 +28,7 @@ export const ACCESS_EDITABLE_PROVIDERS: Partial<
   sentry: 'sentry',
   notion: 'notion',
   resend: 'resend',
+  mercury: 'mercury',
   sonarqube: 'sonarqube',
   vanta: 'vanta',
   secureframe: 'secureframe',

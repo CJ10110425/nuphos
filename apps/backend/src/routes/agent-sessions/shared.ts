@@ -24,6 +24,7 @@ import type {
   AsanaAccountVariables,
   PosthogIntegrationVariables,
   ResendIntegrationVariables,
+  MercuryIntegrationVariables,
   TrelloIntegrationVariables,
   SentryAccountVariables,
   TailscaleClientVariables,
@@ -49,6 +50,7 @@ export type AgentJiraVars = AgentVars & JiraSiteVariables
 export type AgentAsanaVars = AgentVars & AsanaAccountVariables
 export type AgentPosthogVars = AgentVars & PosthogIntegrationVariables
 export type AgentResendVars = AgentVars & ResendIntegrationVariables
+export type AgentMercuryVars = AgentVars & MercuryIntegrationVariables
 export type AgentTrelloVars = AgentVars & TrelloIntegrationVariables
 export type AgentSentryVars = AgentVars & SentryAccountVariables
 export type AgentTailscaleVars = AgentVars & TailscaleClientVariables
@@ -235,6 +237,7 @@ export function normalizeCredentialAccess(
     vantaIntegrationIds: credentialIds(access?.vantaIntegrationIds),
     secureframeIntegrationIds: credentialIds(access?.secureframeIntegrationIds),
     resendIntegrationIds: credentialIds(access?.resendIntegrationIds),
+    mercuryIntegrationIds: credentialIds(access?.mercuryIntegrationIds),
     trelloIntegrationIds: credentialIds(access?.trelloIntegrationIds),
     posthogIntegrationIds: credentialIds(access?.posthogIntegrationIds),
     plaudAccountIds: credentialIds(access?.plaudAccountIds),

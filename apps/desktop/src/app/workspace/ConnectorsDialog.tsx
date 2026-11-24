@@ -230,6 +230,7 @@ function ConnectorsList({
       onpremClusters={accounts?.onprem ?? []}
       upstashAccounts={accounts?.upstash ?? []}
       resendIntegrations={accounts?.resend ?? []}
+      mercuryIntegrations={accounts?.mercury ?? []}
       trelloIntegrations={accounts?.trello ?? []}
       instaboxAccounts={accounts?.instabox ?? []}
       tencentAccounts={accounts?.tencent ?? []}

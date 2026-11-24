@@ -542,6 +542,28 @@
                         "additionalProperties": false
                       }
                     },
+                    "mercuryIntegrations": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "integrationId": {
+                            "type": "string",
+                            "pattern": "^[a-f0-9]{24}$"
+                          },
+                          "label": {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        },
+                        "required": [
+                          "integrationId",
+                          "label"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "default": []
+                    },
                     "devices": {
                       "type": "array",
                       "items": {
@@ -786,6 +808,14 @@
                         },
                         "default": []
                       },
+                      "mercuryIntegrationIds": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "pattern": "^[a-f0-9]{24}$"
+                        },
+                        "default": []
+                      },
                       "trelloIntegrationIds": {
                         "type": "array",
                         "items": {
@@ -1018,6 +1048,13 @@
                           }
                         },
                         "resendIntegrationIds": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "pattern": "^[a-f0-9]{24}$"
+                          }
+                        },
+                        "mercuryIntegrationIds": {
                           "type": "array",
                           "items": {
                             "type": "string",
@@ -1633,6 +1670,28 @@
                             ],
                             "additionalProperties": false
                           }
+                        },
+                        "mercuryIntegrations": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "integrationId": {
+                                "type": "string",
+                                "pattern": "^[a-f0-9]{24}$"
+                              },
+                              "label": {
+                                "type": "string",
+                                "minLength": 1
+                              }
+                            },
+                            "required": [
+                              "integrationId",
+                              "label"
+                            ],
+                            "additionalProperties": false
+                          },
+                          "default": []
                         },
                         "devices": {
                           "type": "array",

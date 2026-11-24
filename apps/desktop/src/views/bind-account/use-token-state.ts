@@ -36,6 +36,8 @@ export function useTokenProviderState() {
   const [upstashApiKey, setUpstashApiKey] = useState('')
   const [resendLabel, setResendLabel] = useState('')
   const [resendApiKey, setResendApiKey] = useState('')
+  const [mercuryLabel, setMercuryLabel] = useState('')
+  const [mercuryApiToken, setMercuryApiToken] = useState('')
   const [instaboxLabel, setInstaboxLabel] = useState('')
   const [instaboxApiKey, setInstaboxApiKey] = useState('')
 
@@ -72,6 +74,8 @@ export function useTokenProviderState() {
     setUpstashApiKey('')
     setResendLabel('')
     setResendApiKey('')
+    setMercuryLabel('')
+    setMercuryApiToken('')
     setInstaboxLabel('')
     setInstaboxApiKey('')
   }
@@ -143,6 +147,10 @@ export function useTokenProviderState() {
     setResendLabel,
     resendApiKey,
     setResendApiKey,
+    mercuryLabel,
+    setMercuryLabel,
+    mercuryApiToken,
+    setMercuryApiToken,
     instaboxLabel,
     setInstaboxLabel,
     instaboxApiKey,

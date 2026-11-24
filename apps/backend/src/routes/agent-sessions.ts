@@ -30,6 +30,7 @@ import {
 import { cnCloudScoped } from '@/routes/agent-sessions/cn-clouds'
 import { projectScoped } from '@/routes/agent-sessions/gcp'
 import { asanaScoped, jiraScoped, linearScoped } from '@/routes/agent-sessions/issue-trackers'
+import { mercuryScoped } from '@/routes/agent-sessions/mercury'
 import { plaudScoped } from '@/routes/agent-sessions/plaud'
 import { posthogScoped } from '@/routes/agent-sessions/posthog'
 import { resendScoped, sentryScoped } from '@/routes/agent-sessions/resend-sentry'
@@ -231,6 +232,7 @@ teamScoped.route('/linear-workspaces/:bindingId', linearScoped)
 teamScoped.route('/jira-sites/:bindingId', jiraScoped)
 teamScoped.route('/asana-accounts/:bindingId', asanaScoped)
 teamScoped.route('/resend-integrations/:integrationId', resendScoped)
+teamScoped.route('/mercury-integrations/:integrationId', mercuryScoped)
 teamScoped.route('/trello-integrations/:integrationId', trelloScoped)
 teamScoped.route('/sentry-accounts/:bindingId', sentryScoped)
 teamScoped.route('/posthog-integrations/:integrationId', posthogScoped)

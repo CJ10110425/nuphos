@@ -23,6 +23,7 @@ export const BINDING_SEALERS: Partial<Record<string, SealerName>> = {
   larkApps: 'lark',
   linearWorkspaces: 'linear',
   linodeAccounts: 'linode',
+  mercuryIntegrations: 'mercury',
   notionIntegrations: 'notion',
   onpremClusters: 'onprem',
   plaudAccounts: 'plaud',

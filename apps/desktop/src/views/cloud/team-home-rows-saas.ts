@@ -7,6 +7,7 @@ import type {
   AzureAccount,
   HuaweiAccount,
   InstaboxAccount,
+  MercuryIntegration,
   NotionIntegration,
   ResendIntegration,
   TrelloIntegration,
@@ -26,6 +27,7 @@ export function buildSaasConnectorRows({
   notionIntegrations,
   upstashAccounts,
   resendIntegrations,
+  mercuryIntegrations,
   trelloIntegrations,
   instaboxAccounts,
   tencentAccounts,
@@ -42,6 +44,7 @@ export function buildSaasConnectorRows({
   notionIntegrations: NotionIntegration[]
   upstashAccounts: UpstashAccount[]
   resendIntegrations: ResendIntegration[]
+  mercuryIntegrations: MercuryIntegration[]
   trelloIntegrations: TrelloIntegration[]
   instaboxAccounts: InstaboxAccount[]
   tencentAccounts: TencentAccount[]
@@ -167,6 +170,20 @@ export function buildSaasConnectorRows({
           name: integration.label,
         }),
       onDelete: () => api.atlasUnbindResendIntegration(teamId, integration.id),
+    })),
+    ...mercuryIntegrations.map((integration) => ({
+      key: `mercury:${integration.id}`,
+      provider: 'mercury' as const,
+      account: integration.label,
+      principal: t('Read-only'),
+      status: t('Mercury account'),
+      onAction: () =>
+        onOpenConnectorInfo({
+          provider: 'mercury',
+          connectorId: integration.id,
+          name: integration.label,
+        }),
+      onDelete: () => api.atlasUnbindMercuryIntegration(teamId, integration.id),
     })),
     // Unbinding is refused by the backend while computers still live on the account.
     ...instaboxAccounts.map((account) => ({

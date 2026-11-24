@@ -2,6 +2,7 @@ import { api } from '../../api'
 import { t } from '../../i18n/index.ts'
 import { POSTHOG_REGION_LABELS } from '../../types/posthog'
 
+import { loadMercuryInfo } from './mercuryLoader'
 import { loadTrelloInfo } from './trelloLoader'
 
 import type { ConnectorInfoLoaders } from './types'
@@ -89,6 +90,7 @@ export const devToolLoaders: ConnectorInfoLoaders = {
     }
   },
   trello: loadTrelloInfo,
+  mercury: loadMercuryInfo,
   linear: async (teamId, connectorId) => {
     const item = (await api.atlasListLinearWorkspaces(teamId)).find((row) => row.id === connectorId)
 

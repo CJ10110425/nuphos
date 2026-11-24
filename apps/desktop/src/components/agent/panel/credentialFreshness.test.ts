@@ -28,6 +28,7 @@ function selection(partial: Partial<AgentCredentialSelection>): AgentCredentialS
     vantaIntegrationIds: [],
     secureframeIntegrationIds: [],
     resendIntegrationIds: [],
+    mercuryIntegrationIds: [],
     trelloIntegrationIds: [],
     githubInstallationIds: [],
     gitlabBindingIds: [],

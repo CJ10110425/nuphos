@@ -4,6 +4,7 @@ import { AzureBindWizard } from './azure'
 import { CloudflareConnect } from './cloudflare'
 import { SecureframeForm, TailscaleForm, VantaForm } from './forms-access'
 import { BetterStackForm, HetznerForm, LinodeForm, UptimeKumaForm } from './forms-hosting'
+import { MercuryForm } from './forms-finance'
 import { InstaboxForm } from './forms-instabox'
 import { NotionForm, ResendForm, UpstashForm, ZeaburForm } from './forms-saas'
 import { GcpBindWizard } from './gcp'
@@ -74,6 +75,8 @@ export function BindDialogBody({
         <UpstashForm st={st} />
       ) : provider === 'resend' ? (
         <ResendForm st={st} />
+      ) : provider === 'mercury' ? (
+        <MercuryForm st={st} />
       ) : provider === 'instabox' ? (
         <InstaboxForm st={st} />
       ) : provider === 'tencent' ? (

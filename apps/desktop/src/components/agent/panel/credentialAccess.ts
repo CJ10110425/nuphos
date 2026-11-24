@@ -37,6 +37,7 @@ export function normalizeCredentialAccess(
     vantaIntegrationIds: value?.vantaIntegrationIds ?? [],
     secureframeIntegrationIds: value?.secureframeIntegrationIds ?? [],
     resendIntegrationIds: value?.resendIntegrationIds ?? [],
+    mercuryIntegrationIds: value?.mercuryIntegrationIds ?? [],
     trelloIntegrationIds: value?.trelloIntegrationIds ?? [],
     githubInstallationIds: value?.githubInstallationIds ?? [],
     gitlabBindingIds: value?.gitlabBindingIds ?? [],
@@ -78,6 +79,7 @@ export function normalizeCredentialOptions(
     vantaIntegrations: value?.vantaIntegrations ?? [],
     secureframeIntegrations: value?.secureframeIntegrations ?? [],
     resendIntegrations: value?.resendIntegrations ?? [],
+    mercuryIntegrations: value?.mercuryIntegrations ?? [],
     trelloIntegrations: value?.trelloIntegrations ?? [],
     githubInstallations: value?.githubInstallations ?? [],
     gitlabBindings: value?.gitlabBindings ?? [],
@@ -121,6 +123,7 @@ export function credentialSelectionSignature(value: AgentCredentialSelection): s
     vantaIntegrationIds: sortedIds(value.vantaIntegrationIds),
     secureframeIntegrationIds: sortedIds(value.secureframeIntegrationIds),
     resendIntegrationIds: sortedIds(value.resendIntegrationIds),
+    mercuryIntegrationIds: sortedIds(value.mercuryIntegrationIds),
     trelloIntegrationIds: sortedIds(value.trelloIntegrationIds),
     githubInstallationIds: sortedIds(value.githubInstallationIds),
     gitlabBindingIds: sortedIds(value.gitlabBindingIds),
@@ -175,6 +178,7 @@ export function allCredentialAccess(options: AgentCredentialOptions): AgentCrede
     resendIntegrationIds: (options.resendIntegrations ?? []).map(
       (integration) => integration.integrationId,
     ),
+    mercuryIntegrationIds: (options.mercuryIntegrations ?? []).map((item) => item.integrationId),
     trelloIntegrationIds: (options.trelloIntegrations ?? []).map(
       (integration) => integration.integrationId,
     ),
@@ -198,10 +202,8 @@ export function allCredentialAccess(options: AgentCredentialOptions): AgentCrede
 }
 
 // What a conversation starts with when the user hasn't chosen: everything they
-// may use, minus Resend. Mirrors `allCredentialAccessFromOptions` in the
-// backend's agent.ts — sending mail is irreversible and leaves the system, so a
-// Resend binding is enabled for a conversation on purpose or not at all. Keep
-// the two in step.
+// may use, minus Resend, Trello and Mercury (sending mail is irreversible, bank
+// data is sensitive). Keep in step with the backend's `defaultCredentialAccessFromOptions`.
 //
 // Note this is deliberately NOT `allCredentialAccess` with a tweak: that one
 // means "every id that exists" and is what prune/select-all need.
@@ -210,6 +212,7 @@ export function defaultCredentialAccess(options: AgentCredentialOptions): AgentC
     ...allCredentialAccess(options),
     resendIntegrationIds: [],
     trelloIntegrationIds: [],
+    mercuryIntegrationIds: [],
     deviceIds: usableDeviceIds(options.devices),
   }
 }
@@ -274,6 +277,7 @@ export function emptyCredentialAccess(): AgentCredentialSelection {
     vantaIntegrationIds: [],
     secureframeIntegrationIds: [],
     resendIntegrationIds: [],
+    mercuryIntegrationIds: [],
     trelloIntegrationIds: [],
     githubInstallationIds: [],
     gitlabBindingIds: [],

@@ -79,6 +79,26 @@ export function buildResendCredentialSections(
     },
   ]
 }
+
+export function buildMercuryCredentialSections(
+  integrations: AgentCredentialOptions['mercuryIntegrations'],
+): CredentialSection[] {
+  if (integrations.length === 0) return []
+
+  return [
+    {
+      id: 'mercury',
+      provider: 'mercury' as const,
+      title: 'Mercury',
+      items: integrations.map((integration) => ({
+        id: integration.integrationId,
+        label: integration.label,
+        sublabel: t('Read-only'),
+      })),
+    },
+  ]
+}
+
 export function buildTrelloCredentialSections(
   integrations: AgentCredentialOptions['trelloIntegrations'],
 ): CredentialSection[] {

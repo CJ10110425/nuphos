@@ -132,6 +132,9 @@ export const CREDENTIAL_LISTERS: Record<SelectionKey, Lister> = {
       credentialPath: `resend-integrations/${id}/credentials`,
     }),
   }),
+  mercuryIntegrationIds: vendedAccount('mercury', 'mercury-integrations', (o) =>
+    (o.mercuryIntegrations ?? []).map((i) => ({ accountId: i.integrationId, label: i.label })),
+  ),
   trelloIntegrationIds: lister({
     provider: 'trello',
     available: (o) => o.trelloIntegrations ?? [],

@@ -192,6 +192,7 @@ export function connectorInfoActions(
     case 'upstash':
     case 'trello':
     case 'resend':
+    case 'mercury':
     case 'instabox':
     case 'jira':
     case 'asana':
@@ -239,6 +240,7 @@ function connectorInfoRow(ctx: ConnectorInfoContext, connectorId: string) {
       notionIntegrations: accounts.notion,
       upstashAccounts: accounts.upstash,
       resendIntegrations: accounts.resend,
+      mercuryIntegrations: accounts.mercury,
       trelloIntegrations: accounts.trello,
       instaboxAccounts: accounts.instabox,
       tencentAccounts: accounts.tencent,

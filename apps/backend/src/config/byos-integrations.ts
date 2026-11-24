@@ -199,6 +199,15 @@ export function byosIntegrationsConfig() {
         optional('CLOUDFLARE_BYOK_ENCRYPTION_KEY'),
       encryptionKeyId: 'default',
     },
+    mercury: {
+      // Mercury binds with a static API token (secret-token:…) pasted by an
+      // admin, so the only server-side config is its encryption key at rest.
+      encryptionKey:
+        optional('MERCURY_BYOK_ENCRYPTION_KEY') ??
+        optional('LINODE_BYOK_ENCRYPTION_KEY') ??
+        optional('CLOUDFLARE_BYOK_ENCRYPTION_KEY'),
+      encryptionKeyId: 'default',
+    },
     // When on, connector OAuth callbacks stage the grant and the requester's own
     // client confirms the binding (complete-oauth) with the callback's one-time
     // code. Off until Desktop, iOS and Android builds that confirm have shipped.

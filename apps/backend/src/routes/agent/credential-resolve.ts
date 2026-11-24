@@ -130,6 +130,11 @@ export function availableCredentialAccess(
       options.resendIntegrations,
       byIntegrationId,
     ),
+    mercuryIntegrationIds: keep(
+      selection.mercuryIntegrationIds,
+      options.mercuryIntegrations ?? [],
+      byIntegrationId,
+    ),
     posthogIntegrationIds: keep(
       selection.posthogIntegrationIds,
       options.posthogIntegrations,

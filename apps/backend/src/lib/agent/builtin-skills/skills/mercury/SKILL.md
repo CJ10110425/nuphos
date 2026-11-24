@@ -23,7 +23,19 @@ account or routing numbers (the scripts mask accounts to their last four).
 
 ## Getting a token
 
-Nuphos has no Mercury connector yet, so the token comes from the user through
+When the credential section lists a Mercury binding, load its token with the
+exact `setupCommand` shown there, then check it:
+
+```bash
+bash skills/mercury/scripts/setup-credentials.sh <teamId> <bindingId>
+python3 -I skills/mercury/scripts/mercury.py ping
+```
+
+A 403 from the setup script means the binding is not selected for this
+conversation: ask for it with `request_user_decision`, category `integration`,
+providers `["mercury"]`, rather than asking for a token.
+
+Only when no Mercury binding is listed, the token comes from the user through
 a secure input card, never through chat:
 
 1. Ask for it with `request_user_decision`, category `credential`,
@@ -38,13 +50,14 @@ a secure input card, never through chat:
    python3 -I skills/mercury/scripts/mercury.py ping
    ```
 
-`save-token.sh` writes `~/.mercury/nuphos.env` (mode 600) with
+Both scripts write `~/.mercury/nuphos.env` (mode 600) with
 `MERCURY_API_TOKEN` (always carrying Mercury's `secret-token:` prefix) and
 `MERCURY_API_BASE_URL`. `mercury.py` reads that file itself, so there is
 nothing to `source`, and the token never appears on a command line. If
 `~/.mercury/nuphos.env` already exists in this session, skip the card.
 
-A 401 means the token is wrong, revoked or expired: ask for a new one with a
+A 401 means the token is wrong, revoked or expired: for a bound token, ask an
+admin to re-bind the Mercury integration; otherwise ask for a new one with a
 new card. Mercury deletes tokens that go unused for a long time.
 
 ## Reading data

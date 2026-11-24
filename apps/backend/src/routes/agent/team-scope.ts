@@ -175,6 +175,7 @@ export function normalizeCredentialSelection(input: unknown): AgentCredentialSel
       vantaIntegrationIds: [],
       secureframeIntegrationIds: [],
       resendIntegrationIds: [],
+      mercuryIntegrationIds: [],
       trelloIntegrationIds: [],
       posthogIntegrationIds: [],
       plaudAccountIds: [],
@@ -214,6 +215,10 @@ export function normalizeCredentialSelection(input: unknown): AgentCredentialSel
       'secureframeIntegrationIds',
     ),
     resendIntegrationIds: normalizeObjectIdList(raw.resendIntegrationIds, 'resendIntegrationIds'),
+    mercuryIntegrationIds: normalizeObjectIdList(
+      raw.mercuryIntegrationIds,
+      'mercuryIntegrationIds',
+    ),
     trelloIntegrationIds: normalizeObjectIdList(raw.trelloIntegrationIds, 'trelloIntegrationIds'),
     posthogIntegrationIds: normalizeObjectIdList(
       raw.posthogIntegrationIds,

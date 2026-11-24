@@ -37,6 +37,7 @@ import type {
   VantaIntegration,
   VolcengineAccount,
 } from './provider-accounts.ts'
+import type { MercuryIntegration } from './mercury.ts'
 import type { SocialProvider } from './team.ts'
 
 // ---------- Monitoring overview (BYOS aggregation) ----------
@@ -120,6 +121,8 @@ export type TeamConnectorsBundle = {
   onprem: OnpremCluster[]
   upstash: UpstashAccount[]
   resend: ResendIntegration[]
+  // Optional: a backend from before Mercury omits it.
+  mercury?: MercuryIntegration[]
   trello: TrelloIntegration[]
   instabox?: InstaboxAccount[]
   betterstack: BetterStackIntegration[]

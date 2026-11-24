@@ -11,6 +11,8 @@ import type { CredentialSection, CredentialSelectorControl } from './credentialS
 import type { useCredentialSections } from './credentialSelectorButtonHooks'
 import type { PersonalCredential, PersonalCredentialProvider } from '../../../types'
 
+type SaasIdKey = 'resendIntegrationIds' | 'mercuryIntegrationIds' | 'trelloIntegrationIds'
+
 export function CredentialSelectorSectionList({
   sections,
   value,
@@ -47,6 +49,14 @@ export function CredentialSelectorSectionList({
       </MenuCheckboxItem>
     )
   }
+  const idGroup = (key: SaasIdKey, providerSections: CredentialSection[]) => (
+    <CredentialSectionGroup
+      sections={providerSections}
+      selectedIds={value[key]}
+      newIds={unseen?.[key]}
+      onChangeIds={(ids) => onChange({ ...value, [key]: ids })}
+    />
+  )
   const identityRow = (provider: 'github' | 'linear', providerSections: CredentialSection[]) => {
     if (!personal) return null
 
@@ -139,18 +149,9 @@ export function CredentialSelectorSectionList({
         newIds={unseen?.secureframeIntegrationIds}
         onChangeIds={(ids) => onChange({ ...value, secureframeIntegrationIds: ids })}
       />
-      <CredentialSectionGroup
-        sections={sections.resendSections}
-        selectedIds={value.resendIntegrationIds}
-        newIds={unseen?.resendIntegrationIds}
-        onChangeIds={(ids) => onChange({ ...value, resendIntegrationIds: ids })}
-      />
-      <CredentialSectionGroup
-        sections={sections.trelloSections}
-        selectedIds={value.trelloIntegrationIds}
-        newIds={unseen?.trelloIntegrationIds}
-        onChangeIds={(ids) => onChange({ ...value, trelloIntegrationIds: ids })}
-      />
+      {idGroup('resendIntegrationIds', sections.resendSections)}
+      {idGroup('mercuryIntegrationIds', sections.mercurySections)}
+      {idGroup('trelloIntegrationIds', sections.trelloSections)}
       <CredentialSectionGroup
         sections={sections.betterStackSections}
         selectedIds={value.betterStackIntegrationIds}

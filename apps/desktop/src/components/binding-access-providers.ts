@@ -29,6 +29,7 @@ export type BindingAccessProvider =
   | 'sentry'
   | 'notion'
   | 'resend'
+  | 'mercury'
   | 'sonarqube'
   | 'vanta'
   | 'secureframe'
@@ -131,6 +132,7 @@ export const PROVIDERS: Record<BindingAccessProvider, ProviderConfig> = {
   sentry: generic('sentry-accounts', t('Sentry account')),
   notion: generic('notion-integrations', t('Notion integration')),
   resend: generic('resend-integrations', t('Resend integration')),
+  mercury: generic('mercury-integrations', t('Mercury account')),
   sonarqube: generic('sonarqube-integrations', t('SonarQube integration')),
   vanta: generic('vanta-integrations', t('Vanta integration')),
   secureframe: generic('secureframe-integrations', t('Secureframe integration')),

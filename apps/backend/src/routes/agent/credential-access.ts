@@ -43,6 +43,10 @@ export function allCredentialAccessFromOptions(
     resendIntegrationIds: selectAll
       ? options.resendIntegrations.map((entry) => entry.integrationId)
       : [],
+    // Bank data: opt-in like Resend, except in an explicit all-credential scope.
+    mercuryIntegrationIds: selectAll
+      ? (options.mercuryIntegrations ?? []).map((entry) => entry.integrationId)
+      : [],
     // Offline and long-gone registrations are listed too; a default takes only usable ones.
     deviceIds: options.devices
       .filter((device) => device.available)
@@ -87,7 +91,7 @@ export async function resolveTriggerCredentialAccess(
 
 /**
  * What a new Bot may use: everything its owner may use right now, as Desktop's new chat
- * selects it. Sending mail (Resend) and Trello stay opt-in.
+ * selects it. Sending mail (Resend), Trello and bank data (Mercury) stay opt-in.
  */
 export async function defaultCredentialAccess(
   teamId: string,
@@ -106,6 +110,7 @@ export function defaultCredentialAccessFromOptions(
     ...allCredentialAccessFromOptions(options, userId, true),
     resendIntegrationIds: [],
     trelloIntegrationIds: [],
+    mercuryIntegrationIds: [],
   }
 }
 
@@ -135,6 +140,7 @@ export function hasCredentialOptions(options: AgentCredentialOptions): boolean {
       options.secureframeIntegrations.length +
       options.resendIntegrations.length +
       (options.trelloIntegrations?.length ?? 0) +
+      (options.mercuryIntegrations?.length ?? 0) +
       options.githubInstallations.length +
       options.gitlabBindings.length +
       options.grafanaInstances.length +
@@ -176,6 +182,7 @@ export function isEmptyCredentialAccess(access: AgentCredentialAccess | undefine
       (access.secureframeIntegrationIds?.length ?? 0) +
       (access.resendIntegrationIds?.length ?? 0) +
       (access.trelloIntegrationIds?.length ?? 0) +
+      (access.mercuryIntegrationIds?.length ?? 0) +
       (access.githubInstallationIds?.length ?? 0) +
       (access.gitlabBindingIds?.length ?? 0) +
       (access.grafanaInstanceIds?.length ?? 0) +
@@ -196,6 +203,7 @@ export function credentialAccessResponse(access: AgentCredentialAccess) {
     linearWorkspaceIds: access.linearWorkspaceIds ?? [],
     resendIntegrationIds: access.resendIntegrationIds ?? [],
     trelloIntegrationIds: access.trelloIntegrationIds ?? [],
+    mercuryIntegrationIds: access.mercuryIntegrationIds ?? [],
     posthogIntegrationIds: access.posthogIntegrationIds ?? [],
     plaudAccountIds: access.plaudAccountIds ?? [],
     deviceIds: access.deviceIds ?? [],

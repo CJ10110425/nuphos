@@ -14,6 +14,7 @@ export const SHAREABLE_PROVIDERS = new Set<string>([
   'notion',
   'upstash',
   'resend',
+  'mercury',
 ])
 
 /** Connections the backend keeps private even when the team shares new ones by default. */
