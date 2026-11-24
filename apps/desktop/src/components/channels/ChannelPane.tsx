@@ -25,7 +25,7 @@ import { BotStatusPill } from './BotStatusPill'
 import { ChannelEmptyState } from './ChannelEmptyState'
 import { ChannelMessages } from './ChannelMessages'
 import { ReplyingBanner } from './channelParts'
-import { sendingPost, stillSending } from './sendingPosts'
+import { atTheEnd, sendingPost, stillSending } from './sendingPosts'
 import { useBotChatQuestions } from './useBotChatQuestions'
 import { useBotComposerControls } from './useBotComposerControls'
 import { useBotTaskAccess } from './useBotTaskAccess'
@@ -104,7 +104,7 @@ export function ChannelPane({
   const pending = stillSending(stored, sending)
 
   if (pending !== sending) setSending(pending)
-  const messages = [...stored, ...pending]
+  const messages = [...stored, ...atTheEnd(stored, pending)]
   const stickToBottom = useStickToBottom(scrollRef, composer)
   const questions = useBotChatQuestions(teamId, bot, botOwned, onOpenSession, !messages.length)
   const send: ComposerSend = (text, filePaths, mentions, options) => {
