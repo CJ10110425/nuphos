@@ -57,14 +57,19 @@ $M transactions --days 90 --out ~/mercury-tx.json
 $M transactions --start 2026-08-01 --end 2026-10-31 --account <accountId> --out ~/mercury-tx.json
 ```
 
-`transactions` reads every active Mercury account by default, drops cancelled,
-failed, reversed and blocked rows, and adds `cardLastFour`, `accountName` and
-`accountLast4` to each row. Write it to a file under `~` with `--out` rather
-than dumping hundreds of rows into the conversation.
+`transactions` reads `GET /transactions` across the whole organization by
+default (`--source global`), drops cancelled, failed, reversed and blocked
+rows, and adds `cardLastFour`, `accountName` and `accountLast4` to each row.
+Write it to a file under `~` with `--out` rather than dumping hundreds of
+rows into the conversation.
 
-`--source global` reads `GET /transactions` across all accounts instead of one
-account at a time. Use it when card spend you expect is missing (for example
-Mercury IO credit card charges), and compare the two counts.
+**Use the global source for a subscription audit.** Mercury IO credit-card
+charges (`kind: creditCardTransaction`) carry an `accountId` that is not in
+`GET /accounts`, so the per-account endpoint never returns them; they are
+labelled `accountName: "Mercury IO credit"`. On a real account, 90 days gave
+440 rows per account but 758 globally. `--source accounts` (one
+`GET /account/{id}/transactions` per checking/savings account) is only for
+questions about one bank account.
 
 API facts behind the scripts (from docs.mercury.com/reference):
 
@@ -77,9 +82,8 @@ API facts behind the scripts (from docs.mercury.com/reference):
 
 Base URL `https://api.mercury.com/api/v1`, header
 `Authorization: Bearer secret-token:…`. A transaction's card is `cardId`
-(card payments and refunds only). Spending is expected as a negative `amount`;
-check the sign on the first run and pass `--debit-sign positive` to the
-detector if Mercury returns debits as positive numbers.
+(card payments and refunds only). Spending is a negative `amount` (checked on
+a real account); `--debit-sign positive` exists only for other exports.
 
 ## Finding recurring charges (subscription audit)
 
@@ -92,10 +96,14 @@ python3 -I skills/mercury/scripts/detect-recurring.py ~/mercury-tx.json --json  
 The detector groups charges by normalized merchant name (order ids and store
 numbers removed) and amount (within `--tolerance`, default 5%, so a small tax
 or price change stays in one group), then keeps a group only when its dates
-repeat weekly, biweekly, monthly, quarterly or yearly. For each it reports
-merchant, amount, cadence, count, dates, last and next expected charge, card
-last four, account and a confidence (`high` from three charges, `medium` from
-two).
+repeat weekly, biweekly, monthly, quarterly or yearly. When one merchant
+bills the same amount several times a month (three US$9.99 seats on the 24th,
+24th and 27th), the group is split into monthly streams by billing day and
+each stream is reported as its own plan, marked `stream: "2/3"`; do not
+assume the streams belong to the same account or user. For each it reports
+merchant, amount, cadence, count, dates, last charge, next expected charge
+(an estimate: say so), card last four, account and a confidence (`high` from
+three charges, `medium` from two).
 
 It leaves out, and counts by reason:
 
@@ -104,6 +112,11 @@ It leaves out, and counts by reason:
 - card-bill payments (Mercury IO, "credit card payment", autopay, payoff);
 - top-ups and prepaid loads (top up, reload, add funds, buy credits, 儲值);
 - single charges, which cannot show a rhythm.
+
+Ride-hailing, delivery, dining, grocery and fuel merchants (by name, Mercury
+category or MCC) that happen to repeat at a similar amount are moved to
+`likelyNotSubscription` with the reason. A real membership there (Uber One,
+DashPass) lands in that list too, so mention it rather than drop it.
 
 Merchants charged three or more times in clearly varying amounts (cloud
 usage, ads, API credits) are listed separately as **usage-based**: they are

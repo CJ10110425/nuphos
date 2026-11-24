@@ -109,7 +109,7 @@ describe('mercury.py', () => {
     const home = mkdtempSync(join(tmpdir(), 'mercury-client-'))
     const out = join(home, 'tx.json')
     const result = await runAsync(
-      ['python3', '-I', join(scripts, 'mercury.py'), 'transactions', '--days', '90', '--out', out],
+      ['python3', '-I', join(scripts, 'mercury.py'), 'transactions', '--source', 'accounts', '--out', out],
       {
         HOME: home,
         MERCURY_API_TOKEN: 'tok',
@@ -129,7 +129,125 @@ describe('mercury.py', () => {
   })
 })
 
+describe('mercury.py global source', () => {
+  let server: ReturnType<typeof Bun.serve>
+  const paths: string[] = []
+
+  beforeAll(() => {
+    server = Bun.serve({
+      port: 0,
+      fetch(request) {
+        const url = new URL(request.url)
+
+        paths.push(url.pathname + url.search)
+        if (url.pathname === '/accounts') {
+          return Response.json({
+            accounts: [{ id: 'acc-1', name: 'Ops', status: 'active', type: 'mercury' }],
+            page: {},
+          })
+        }
+        if (url.pathname === '/cards') {
+          return Response.json({ cards: [{ id: 'card-1', lastFour: '4242' }], page: {} })
+        }
+
+        return url.searchParams.get('start_after')
+          ? Response.json({
+              transactions: [
+                {
+                  id: 'g2',
+                  amount: -30,
+                  status: 'sent',
+                  kind: 'creditCardTransaction',
+                  cardId: 'card-1',
+                  accountId: 'io-credit',
+                },
+              ],
+              page: {},
+            })
+          : Response.json({
+              transactions: [{ id: 'g1', amount: -10, status: 'sent', accountId: 'acc-1' }],
+              page: { nextPage: 'g1' },
+            })
+      },
+    })
+  })
+
+  afterAll(() => server.stop(true))
+
+  test('is the default, follows the cursor and keeps IO credit-card charges', async () => {
+    const home = mkdtempSync(join(tmpdir(), 'mercury-global-'))
+    const out = join(home, 'tx.json')
+    const result = await runAsync(
+      ['python3', '-I', join(scripts, 'mercury.py'), 'transactions', '--out', out],
+      {
+        HOME: home,
+        MERCURY_API_TOKEN: 'tok',
+        MERCURY_API_BASE_URL: `http://127.0.0.1:${server.port}`,
+      },
+    )
+    const data = JSON.parse(readFileSync(out, 'utf8'))
+
+    expect(result.code).toBe(0)
+    expect(data.source).toBe('global')
+    expect(data.transactions.map((t: { id: string }) => t.id)).toEqual(['g1', 'g2'])
+    expect(data.transactions[1]).toMatchObject({
+      accountName: 'Mercury IO credit',
+      cardLastFour: '4242',
+    })
+    expect(paths.some((p) => p.startsWith('/transactions?') && p.includes('start_after=g1'))).toBe(
+      true,
+    )
+    expect(paths.some((p) => p.startsWith('/account/'))).toBe(false)
+  })
+})
+
 describe('detect-recurring.py', () => {
+  function detect(transactions: unknown[]) {
+    const dir = mkdtempSync(join(tmpdir(), 'mercury-detect-'))
+    const file = join(dir, 'tx.json')
+
+    writeFileSync(file, JSON.stringify({ transactions }))
+    const result = run(['python3', '-I', join(scripts, 'detect-recurring.py'), file, '--json'])
+
+    expect(result.code).toBe(0)
+
+    return JSON.parse(result.out)
+  }
+
+  test('splits one merchant and amount billed several times a month into separate plans', () => {
+    const days = ['08-24', '08-24', '08-27', '09-24', '09-24', '09-27', '10-24', '10-24', '10-27']
+    const report = detect(days.map((d, i) => charge(`2026-${d}`, 'MAILSUITE', -9.99, { id: `m${i}` })))
+
+    expect(
+      report.recurring.map((r: { stream: string; dates: string[] }) => [r.stream, r.dates[0]]),
+    ).toEqual([
+      ['1/3', '2026-08-24'],
+      ['2/3', '2026-08-24'],
+      ['3/3', '2026-08-27'],
+    ])
+    expect(report.recurring.every((r: { cadence: string }) => r.cadence === 'monthly')).toBe(true)
+    expect(report.oneOffCharges).toBe(0)
+  })
+
+  test('flags ride-hailing and delivery that repeat at similar amounts as likely not subscriptions', () => {
+    const report = detect([
+      charge('2026-08-05', 'UBER *TRIP', -18),
+      charge('2026-09-05', 'UBER *TRIP', -18.4),
+      charge('2026-10-05', 'UBER *TRIP', -18.2),
+      charge('2026-08-11', 'Uber Eats', -32),
+      charge('2026-09-11', 'Uber Eats', -32.5),
+      charge('2026-08-02', 'Local Diner', -25, { merchantCategoryCode: '5812' }),
+      charge('2026-09-02', 'Local Diner', -25, { merchantCategoryCode: '5812' }),
+      charge('2026-08-09', 'GITHUB', -4),
+      charge('2026-09-09', 'GITHUB', -4),
+    ])
+
+    expect(report.recurring.map((r: { merchant: string }) => r.merchant)).toEqual(['GITHUB'])
+    expect(
+      report.likelyNotSubscription.map((r: { merchant: string }) => r.merchant).sort(),
+    ).toEqual(['Local Diner', 'UBER *TRIP', 'Uber Eats'])
+  })
+
   test('keeps periodic same-amount charges and leaves out bills, top-ups, one-offs and usage', () => {
     const dir = mkdtempSync(join(tmpdir(), 'mercury-detect-'))
     const file = join(dir, 'tx.json')

@@ -6,7 +6,7 @@ Usage (run with `python3 -I`):
   mercury.py accounts
   mercury.py cards
   mercury.py transactions [--days 90 | --start YYYY-MM-DD [--end YYYY-MM-DD]]
-                          [--account ID ...] [--source accounts|global] [--out FILE]
+                          [--account ID ...] [--source global|accounts] [--out FILE]
 
 The token comes from MERCURY_API_TOKEN or ~/.mercury/nuphos.env and is only
 ever sent in a request header, never printed or passed as an argument.
@@ -161,7 +161,9 @@ def cmd_transactions(args):
         card = cards.get(tx["cardId"]) or {}
         tx["cardLastFour"] = card.get("lastFour") or card.get("lastFourDigits")
         acc = accounts.get(tx["accountId"]) or {}
-        tx["accountName"] = acc.get("nickname") or acc.get("name")
+        tx["accountName"] = acc.get("nickname") or acc.get("name") or (
+            "Mercury IO credit" if (tx.get("kind") or "").startswith("creditCard") else None
+        )
         tx["accountLast4"] = last4(acc.get("accountNumber"))
     kept = [tx for tx in txs if tx.get("status") not in SKIPPED_STATUSES]
     result = {"start": start, "end": end, "source": args.source, "count": len(kept), "transactions": kept}
@@ -186,7 +188,8 @@ def main():
     tx.add_argument("--start")
     tx.add_argument("--end")
     tx.add_argument("--account", action="append", help="account id; repeatable (default: all active)")
-    tx.add_argument("--source", choices=["accounts", "global"], default="accounts")
+    # Mercury IO credit-card charges belong to no listed account, so only `global` returns them.
+    tx.add_argument("--source", choices=["global", "accounts"], default="global")
     tx.add_argument("--out")
     args = parser.parse_args()
     TOKEN, BASE = load_settings()

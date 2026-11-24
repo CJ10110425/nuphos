@@ -36,6 +36,18 @@ TOP_UP = re.compile(
     r"buy\s*credits?|credits?\s*purchase|balance\s*(load|add)|儲值|加值",
     re.I,
 )
+# Everyday spending that repeats by habit, not by plan: flagged, not counted as a subscription.
+NOT_SUBSCRIPTION = re.compile(
+    r"\buber\b|lyft|doordash|grubhub|instacart|postmates|caviar|seamless|gopuff|deliveroo|"
+    r"foodpanda|ubereats|uber\s*eats|starbucks|mcdonald|chipotle|sweetgreen|restaurant|cafe|"
+    r"coffee|bakery|whole\s*foods|trader\s*joe|safeway|costco|walmart|kroger|7-eleven|"
+    r"chevron|shell\s*oil|exxon|taxi|lime\b|bird\s*rides",
+    re.I,
+)
+NOT_SUBSCRIPTION_CATEGORY = re.compile(r"restaurant|grocer|food|dining|transport|taxi|ride|fuel|gas", re.I)
+NOT_SUBSCRIPTION_MCC = {"4111", "4121", "4131", "5411", "5422", "5441", "5499", "5541", "5542",
+                        "5811", "5812", "5813", "5814"}
+MONTHLY_GAP = (24, 38)
 CADENCES = [  # name, min days, max days, typical days
     ("weekly", 6, 8, 7),
     ("biweekly", 13, 16, 14),
@@ -82,6 +94,42 @@ def exclusion(tx, debit_sign):
     return None
 
 
+def not_subscription_reason(tx):
+    text = " ".join(str(tx.get(k) or "") for k in ("counterpartyName", "counterpartyNickname", "bankDescription"))
+    if NOT_SUBSCRIPTION.search(text):
+        return "ride/delivery/dining/grocery merchant"
+    if NOT_SUBSCRIPTION_CATEGORY.search(str(tx.get("mercuryCategory") or "")):
+        return f"category {tx.get('mercuryCategory')}"
+    if str(tx.get("merchantCategoryCode") or "") in NOT_SUBSCRIPTION_MCC:
+        return f"MCC {tx.get('merchantCategoryCode')}"
+    return None
+
+
+def month_streams(group):
+    """Split same-amount charges into streams that each bill once a month on their own day.
+
+    Several seats or accounts at one merchant (three US$9.99 plans on the 24th, 24th
+    and 27th) look like charges days apart; each charge joins the stream it continues.
+    """
+    streams = []
+    for tx in sorted(group, key=charge_date):
+        day = charge_date(tx)
+        best = None
+        for stream in streams:
+            gap = (day - charge_date(stream[-1])).days
+            if not MONTHLY_GAP[0] <= gap <= MONTHLY_GAP[1]:
+                continue
+            drift = abs(day.day - charge_date(stream[-1]).day)
+            score = (min(drift, 31 - drift), abs(gap - 30.4))
+            if best is None or score < best[0]:
+                best = (score, stream)
+        if best:
+            best[1].append(tx)
+        else:
+            streams.append([tx])
+    return streams
+
+
 def cluster_amounts(charges, tolerance):
     """Split one merchant's charges into groups whose amounts lie within tolerance of the group's first."""
     groups = []
@@ -109,6 +157,28 @@ def cadence_of(dates):
     return None
 
 
+def describe(merchant, stream, cadence, typical, days):
+    amounts = [abs(t["amount"]) for t in stream]
+    latest = max(stream, key=charge_date)
+    reason = next((r for r in map(not_subscription_reason, stream) if r), None)
+    return {
+        "merchant": merchant,
+        "amount": round(statistics.median(amounts), 2),
+        "amountRange": [min(amounts), max(amounts)],
+        "cadence": cadence,
+        "count": len(stream),
+        "dates": [d.isoformat() for d in days],
+        "lastCharge": days[-1].isoformat(),
+        "nextExpected": (days[-1] + dt.timedelta(days=round(typical))).isoformat(),
+        "cardLastFour": sorted({t.get("cardLastFour") for t in stream if t.get("cardLastFour")}),
+        "accounts": sorted({t.get("accountName") for t in stream if t.get("accountName")}),
+        "kind": latest.get("kind"),
+        "category": latest.get("mercuryCategory"),
+        "confidence": "high" if len(days) >= 3 else "medium",
+        "likelyNotSubscription": reason,
+    }
+
+
 def analyse(transactions, tolerance, debit_sign):
     excluded = Counter()
     by_merchant = defaultdict(list)
@@ -126,28 +196,20 @@ def analyse(transactions, tolerance, debit_sign):
     for key, charges in by_merchant.items():
         matched = 0
         for group in cluster_amounts(charges, tolerance):
-            found = cadence_of([charge_date(t) for t in group])
-            if not found:
-                continue
-            name, typical, days = found
-            matched += len(group)
-            amounts = [abs(t["amount"]) for t in group]
-            latest = max(group, key=charge_date)
-            recurring.append({
-                "merchant": names[key].most_common(1)[0][0],
-                "amount": round(statistics.median(amounts), 2),
-                "amountRange": [min(amounts), max(amounts)],
-                "cadence": name,
-                "count": len(group),
-                "dates": [d.isoformat() for d in days],
-                "lastCharge": days[-1].isoformat(),
-                "nextExpected": (days[-1] + dt.timedelta(days=round(typical))).isoformat(),
-                "cardLastFour": sorted({t.get("cardLastFour") for t in group if t.get("cardLastFour")}),
-                "accounts": sorted({t.get("accountName") for t in group if t.get("accountName")}),
-                "kind": latest.get("kind"),
-                "category": latest.get("mercuryCategory"),
-                "confidence": "high" if len(days) >= 3 else "medium",
-            })
+            whole = cadence_of([charge_date(t) for t in group])
+            if whole and len({charge_date(t) for t in group}) == len(group):
+                streams = [(group, whole)]
+            else:
+                parts = month_streams(group)
+                streams = [(part, cadence_of([charge_date(t) for t in part])) for part in parts]
+                streams = [(part, found) for part, found in streams if found]
+            for index, (stream, found) in enumerate(streams, 1):
+                name, typical, days = found
+                matched += len(stream)
+                entry = describe(names[key].most_common(1)[0][0], stream, name, typical, days)
+                if len(streams) > 1:
+                    entry["stream"] = f"{index}/{len(streams)}"
+                recurring.append(entry)
         if matched:
             continue
         amounts = [abs(t["amount"]) for t in charges]
@@ -161,25 +223,32 @@ def analyse(transactions, tolerance, debit_sign):
             })
         else:
             one_off += len(charges)
-    recurring.sort(key=lambda r: (-r["amount"], r["merchant"]))
+    recurring.sort(key=lambda r: (-r["amount"], r["merchant"], r.get("stream", "")))
     usage_based.sort(key=lambda r: -r["total"])
-    return {"recurring": recurring, "usageBased": usage_based, "excluded": dict(excluded), "oneOffCharges": one_off}
+    flagged = [r for r in recurring if r["likelyNotSubscription"]]
+    recurring = [r for r in recurring if not r["likelyNotSubscription"]]
+    return {"recurring": recurring, "likelyNotSubscription": flagged, "usageBased": usage_based, "excluded": dict(excluded), "oneOffCharges": one_off}
 
 
 def print_table(result, period):
     rec = result["recurring"]
     print(f"Recurring charges {period}: {len(rec)}")
-    print("| Merchant | Amount | Cadence | Count | Last charge | Next expected | Card | Confidence |")
+    print("| Merchant | Amount | Cadence | Count | Last charge | Next expected (est.) | Card | Confidence |")
     print("| --- | ---: | --- | ---: | --- | --- | --- | --- |")
     for r in rec:
+        stream = f" (stream {r['stream']})" if r.get("stream") else ""
         lo, hi = r["amountRange"]
         amount = f"{r['amount']:.2f}" if lo == hi else f"{r['amount']:.2f} ({lo:.2f}-{hi:.2f})"
         card = ", ".join(f"••{c}" for c in r["cardLastFour"]) or "-"
-        print(f"| {r['merchant']} | {amount} | {r['cadence']} | {r['count']} | {r['lastCharge']} "
+        print(f"| {r['merchant']}{stream} | {amount} | {r['cadence']} | {r['count']} | {r['lastCharge']} "
               f"| {r['nextExpected']} | {card} | {r['confidence']} |")
     monthly = sum(r["amount"] * 30.4 / {"weekly": 7, "biweekly": 14, "monthly": 30.4,
                                          "quarterly": 91, "yearly": 365}[r["cadence"]] for r in rec)
     print(f"\nEstimated monthly total: {monthly:.2f}")
+    if result["likelyNotSubscription"]:
+        print("\nRepeating but likely not subscriptions (not counted above):")
+        for r in result["likelyNotSubscription"]:
+            print(f"- {r['merchant']}: {r['amount']:.2f} {r['cadence']} x{r['count']} ({r['likelyNotSubscription']})")
     if result["usageBased"]:
         print("\nUsage-based / variable amounts (not counted above):")
         for u in result["usageBased"]:
